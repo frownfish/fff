@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import logging
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 
@@ -7,12 +8,13 @@ from fuzzyfile import fuzzyfile
 
 
 IGNORE_DIRS = ['.git', '.svn']
-IGNORE_FILES = ['.pyc']
+IGNORE_FILES = [r'\.pyc$', r'^\.bash', r'^\.git']
 
 class FuzzyIndex:
     """ class to hold isntances of the File class and some indexing functions. """
     def __init__(self, root, ignore_dirs=IGNORE_DIRS, ignore_files=IGNORE_FILES, focus_files=[]):
         """ create a file index built out of instances of the File class. """
+        print ignore_files
         self.files = []
         for r, dirs, fs in os.walk(root):
             for d in ignore_dirs:
@@ -24,7 +26,7 @@ class FuzzyIndex:
                         path = os.path.join(r, f)
                         self.append(path)
                 else:
-                    if not os.path.splitext(f)[1] in ignore_files:
+                    if True not in (bool(re.search(p, f)) for p in ignore_files):
                         path = os.path.join(r, f)
                         self.append(path)
 
