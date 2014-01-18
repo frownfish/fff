@@ -8,8 +8,7 @@
                 "*.pyc",
                 "*.sublime-workspace",
                 "*.sublime-project",
-                ".gitignore",
-                "__init__.py"
+                ".gitignore"
             ]
         }
     ],
