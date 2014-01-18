@@ -11,17 +11,22 @@ IGNORE_FILES = ['.pyc']
 
 class FuzzyIndex:
     """ class to hold isntances of the File class and some indexing functions. """
-    def __init__(self, root):
+    def __init__(self, root, ignore_dirs=IGNORE_DIRS, ignore_files=IGNORE_FILES, focus_files=[]):
         """ create a file index built out of instances of the File class. """
         self.files = []
         for r, dirs, fs in os.walk(root):
-            for d in IGNORE_DIRS:
+            for d in ignore_dirs:
                 if d in dirs:
                     dirs.remove(d)
-            for _f in fs:
-                if not os.path.splitext(_f)[1] in IGNORE_FILES:
-                    path = os.path.join(r, _f)
-                    self.append(path)
+            for f in fs:
+                if focus_files:
+                    if f.lower() in focus_files:
+                        path = os.path.join(r, f)
+                        self.append(path)
+                else:
+                    if not os.path.splitext(f)[1] in ignore_files:
+                        path = os.path.join(r, f)
+                        self.append(path)
 
 
     def append(self, f):
@@ -67,6 +72,8 @@ class FuzzyIndex:
             return self._tiebreak(lows)
         else:
             return lows[0]
+
+
 
 if __name__ == "__main__":
     FI = FuzzyIndex(os.getcwd())

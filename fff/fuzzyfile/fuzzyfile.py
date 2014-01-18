@@ -3,9 +3,7 @@ import re
 import logging
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 
-from fuzzymatch import fuzzymatch
-
-REALLYBIG = 10000000000000000000
+MATCH_LEVELS = 6
 
 class FuzzyFile:
     """ file object to store information. """
@@ -29,7 +27,7 @@ class FuzzyFile:
         CAPTURE = "(.{{,{0}}}?)"
         HEAD = "^(.*?)"
         TAIL = "(.*?)$"
-        for level in range(6):
+        for level in range(MATCH_LEVELS):
             _pat = HEAD + CAPTURE.format(level).join(list(pattern)) + TAIL
             m = re.search(_pat, self.name)
             if m:
