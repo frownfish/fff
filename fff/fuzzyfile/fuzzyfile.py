@@ -1,7 +1,7 @@
 import os
 import re
 import logging
-logging.basicConfig(level=logging.DEBUG, format='%(message)s')
+logging.basicConfig(level=logging.INFO, format='%(message)s')
 
 MATCH_LEVELS = 20
 
@@ -31,7 +31,7 @@ class FuzzyFile:
             _pat = HEAD + CAPTURE.format(level).join(list(pattern)) + TAIL
             m = re.search(_pat, self.name)
             if m:
-                print _pat
+                logging.debug(_pat)
                 self.score = sum([len(x) for x in m.groups()[1:-1]])
                 self.head = len(m.groups()[1])
                 self.tail = len(m.groups()[-1])
