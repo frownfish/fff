@@ -3,7 +3,7 @@ import re
 import logging
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-MATCH_LEVELS = 20
+
 
 class FuzzyFile:
     """ file object to store information. """
@@ -21,32 +21,55 @@ class FuzzyFile:
             pass
 
 
-    def match(self, pattern):
-        """ try to match the pattern """
-        # pattern.replace(".", "\\.")
-        CAPTURE = "(.{{,{0}}}?)"
-        HEAD = "^(.*?)"
-        TAIL = "(.*?)$"
-        for level in range(MATCH_LEVELS):
-            _pat = HEAD + CAPTURE.format(level).join(list(pattern)) + TAIL
-            m = re.search(_pat, self.name)
+    def __lt__(self, other):
+        if isinstance(other, FuzzyFile):
+            if not self:
+                # self is not a match
+                return False
+            elif not other:
+                # other is not a match
+                return True
+            elif self.score != other.score:
+                return self.score < other.score
+            elif self.head != other.head:
+                # if tie, shortest HEAD portion wins
+                return self.head < other.head
+            elif self.tail != other.tail:
+                # if tie, shortest TAIL portion wins
+                return self.tail < other.tail
+            else:
+                # alphabetically
+                return self.name < other.name
+        else:
+            return NotImplemented
+
+
+    def __nonzero__(self):
+        """ evaluate the class instance as a bool, based on self.matched """
+        return self.matched
+
+
+    def match(self, patterns, include_path=False):
+        """ try to match the pattern. 'patterns' is a list of compiled regular expressions. """
+        for p in patterns:
+            if include_path:
+                m = p.search(self.path)
+            else:
+                m = p.search(self.name)
             if m:
-                logging.debug(_pat)
+                logging.debug(p)
                 self.score = sum([len(x) for x in m.groups()[1:-1]])
                 self.head = len(m.groups()[1])
                 self.tail = len(m.groups()[-1])
                 self.matched = True
-                logging.debug( "p: {0}, g: {1}, s: {2}, h: {3}, t: {4}".format(self.path,
-                                                                               m.groups(),
-                                                                               self.score,
-                                                                               self.head,
-                                                                               self.tail))
+                logging.debug("p: {0}, g: {1}".format(self.path, m.groups()))
+                logging.debug("s: {0}, h: {1}, t: {2}".format(self.score, self.head, self.tail))
                 break
 
 
 if __name__=="__main__":
-    F = FuzzyFile("/home/jeff/git/fff/fff/fuzzyfile/fuzzyfile.py")
-    print F.name
-    print F.ext
-    print F.path
+    f = FuzzyFile("/home/jeff/git/fff/fff/fuzzyfile/fuzzyfile.py")
+    print f.name
+    print f.ext
+    print f.path
 

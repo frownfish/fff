@@ -6,7 +6,10 @@ logging.basicConfig(level=logging.INFO, format='%(message)s')
 
 from fuzzyfile import fuzzyfile
 
-
+MATCH_LEVELS = 20
+CAPTURE = "(.{{,{0}}}?)"
+HEAD = "^(.*?)"
+TAIL = "(.*?)$"
 
 
 class FuzzyIndex:
@@ -35,44 +38,26 @@ class FuzzyIndex:
         self.files.append(_f)
 
 
-    def _tiebreak(self, files):
-        """ attempt to break a tie for best match in a sensible manner. """
-        # shortest HEAD portion wins
-        tmp = min([f for f in files if f.matched], key=lambda x: x.head)
-        tmps = [f for f in files if f.head == tmp.head and f.matched]
-        if len(tmps) == 0:
-            return tmps[0]
-        
-        # if still tie, shortest TAIL portion wins
-        tmp = min([f for f in files if f.matched], key=lambda x: x.tail)
-        tmps = [f for f in files if f.tail == tmp.tail and f.matched]
-        if len(tmps) == 0:
-            return tmps[0]
-
-        # if still tie, shortest filename wins
-        tmp = min([f for f in files if f.matched], key=lambda x: len(x.name))
-        tmps = [f for f in files if len(f.name) == len(tmp.name) and f.matched]
-        if len(tmps) == 0:
-            return tmps[0]
-
-        # if still tie, alphabetical by filename
-        return sorted(files, key=lambda k: k.name)[0]
-
-
-
-    def match(self, pattern):
+    def match(self, pattern, include_path=False):
         """ find the best match in the file index for the given pattern. """
+        patterns = []
+        for level in range(MATCH_LEVELS):
+            segments = [re.escape(x) for x in list(pattern)]
+            patterns.append(re.compile(HEAD + CAPTURE.format(level).join(segments) + TAIL))
         for f in self.files:
-            f.match(pattern) # the fuzzyfile object will update with its scores.
+            f.match(patterns, include_path=include_path) # the fuzzyfile object will update with its scores.
         
         # return the "best" match, that is the one with the lowest score (fewest interposed characters)
-        low = min([f for f in self.files if f.matched], key=lambda x: x.score)
-        lows = [f for f in self.files if f.score == low.score and f.matched]
-        if len(lows) > 1:
-            logging.debug("tie")
-            return self._tiebreak(lows)
+        best = min(self.files)  # makes use of the class-defined __lt__ function
+        if best:
+            return best
+        elif not include_path:
+            # unsuccessful file name search. expand the search to include the full file paths
+            return self.match(pattern, include_path=True)
         else:
-            return lows[0]
+            return None
+            
+            
 
 
 if __name__ == "__main__":

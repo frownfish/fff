@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(__file__))
 from fuzzyindex import fuzzyindex
 
 IGNORE_DIRS = ['.git', '.svn']
-IGNORE_FILES = [r'\.pyc$', r'^\.bash', r'^\.git']
+IGNORE_FILES = [r'\.pyc$', r'^\.bash', r'^\.git', r'^__']
 
 
 parser = argparse.ArgumentParser()
@@ -23,4 +23,5 @@ args = parser.parse_args()
 FI = fuzzyindex.FuzzyIndex(args.root, ignore_dirs=args.ignore_dirs, ignore_files=args.ignore_files, focus_files=[])
 
 f = FI.match(args.pattern)
-print f.path
+if f:
+    print f.path
