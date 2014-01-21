@@ -19,6 +19,8 @@ class FuzzyFile:
         else:
             pass
 
+    def __str__(self):
+        return self.path
 
     def __lt__(self, other):
         if isinstance(other, FuzzyFile):

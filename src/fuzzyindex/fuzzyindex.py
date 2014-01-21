@@ -38,7 +38,7 @@ class FuzzyIndex:
         self.files.append(_f)
 
 
-    def match(self, pattern, include_path=False):
+    def match(self, pattern, include_path=False, list_files=False):
         """ find the best match in the file index for the given pattern. """
         patterns = []
         for level in range(MATCH_LEVELS):
@@ -48,14 +48,21 @@ class FuzzyIndex:
             f.match(patterns, include_path=include_path) # the fuzzyfile object will update with its scores.
         
         # return the "best" match, that is the one with the lowest score (fewest interposed characters)
-        best = min(self.files)  # makes use of the class-defined __lt__ function
-        if best:
-            return best
-        elif not include_path:
-            # unsuccessful file name search. expand the search to include the full file paths
-            return self.match(pattern, include_path=True)
+        if list_files:
+            matches = [f for f in self.files if f]
+            if matches or (list_files and include_path):
+                return matches
+            else:
+                return self.match(pattern, include_path=True, list_files=list_files)
         else:
-            return None
+            best = min(self.files)  # makes use of the class-defined __lt__ function
+            if best:
+                return best
+            elif not include_path:
+                # unsuccessful file name search. expand the search to include the full file paths
+                return self.match(pattern, include_path=True, list_files=list_files)
+            else:
+                return None
             
             
 
