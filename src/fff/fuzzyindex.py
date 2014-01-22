@@ -2,14 +2,13 @@ import os
 import sys
 import re
 import logging
-logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-from fuzzyfile import fuzzyfile
+import fuzzyfile
 
 MATCH_LEVELS = 20
 CAPTURE = "(.{{,{0}}}?)"
-HEAD = "^(.*?)"
-TAIL = "(.*?)$"
+HEAD = "^(?P<head>.*?)"
+TAIL = "(?P<tail>.*?)$"
 
 
 class FuzzyIndex:
@@ -63,11 +62,10 @@ class FuzzyIndex:
                 return self.match(pattern, include_path=True, list_files=list_files)
             else:
                 return None
-            
-            
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
     FI = FuzzyIndex(os.getcwd())
     for f in FI.files:
-        logging.debug(f.name)
+        logging.info(f.name)

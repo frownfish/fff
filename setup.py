@@ -5,7 +5,7 @@ setup(name='fff',
       description='Fuzzy File Finder',
       author="Jeff Kloosterman",
       url="https://github.com/frownfish/fff",
-      packages=['fuzzyfile', 'fuzzyindex'],
-      package_dir={'fuzzyfile': 'src/fuzzyfile', 'fuzzyindex': 'src/fuzzyindex' },
+      packages=['fff'],
+      package_dir={'fff': 'src/fff'},
       scripts=['src/fffind.py']
       )

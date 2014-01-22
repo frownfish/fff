@@ -59,9 +59,9 @@ class FuzzyFile:
                 m = p.search(self.name)
             if m:
                 logging.debug(p)
-                self.score = sum([len(x) for x in m.groups()[1:-1]])
-                self.head = len(m.groups()[1])
-                self.tail = len(m.groups()[-1])
+                self.head = len(m.groupdict(0)['head'])
+                self.tail = len(m.groupdict(0)['tail'])
+                self.score = sum([len(x) for x in m.groups()]) - self.head - self.tail
                 self.matched = True
                 logging.debug("p: {0}, g: {1}".format(self.path, m.groups()))
                 logging.debug("s: {0}, h: {1}, t: {2}".format(self.score, self.head, self.tail))

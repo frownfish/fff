@@ -4,7 +4,7 @@ import os
 import sys
 import argparse
 
-from fuzzyindex import fuzzyindex
+from fff.fuzzyindex import FuzzyIndex
 
 IGNORE_DIRS = ['.git', '.svn', 'build']
 IGNORE_FILES = [r'\.pyc$', r'^\.bash', r'^\.git', r'^__']
@@ -19,7 +19,7 @@ parser.add_argument("-id", "--ignore-dirs", help="Do not scan into the given dir
 parser.add_argument("-l", "--list", help="List all of the matched files instead of picking the 'best' one.", action="store_true")
 args = parser.parse_args()
 
-FI = fuzzyindex.FuzzyIndex(args.root, ignore_dirs=args.ignore_dirs, ignore_files=args.ignore_files, focus_files=[])
+FI = FuzzyIndex(args.root, ignore_dirs=args.ignore_dirs, ignore_files=args.ignore_files, focus_files=[])
 
 f = FI.match(args.pattern, list_files=args.list)
 
