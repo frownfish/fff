@@ -8,5 +8,8 @@ clean-all:
 	make clean
 	find . -name "*.pyc" -delete
 
-test: src/fff/*.py
-	echo 'why are there no tests yet???'
+test: test/test_all.py test-fuzzy-file
+	python test/test_all.py
+
+test-fuzzyfile: test/test_fuzzyfile.py
+	python test/test_fuzzyfile.py
