@@ -8,16 +8,15 @@ class FuzzyFile:
     """ file object to store information. """
     def __init__(self, path):
         """ parse out some data based on the file path. """
-        if os.path.exists(path):
-            self.ext = os.path.splitext(path)[1].strip('.')
-            self.dir, self.name = os.path.split(path)
-            self.path = path
-            self.score = 0
-            self.head = 0
-            self.tail = 0
-            self.matched = False
-        else:
-            pass
+        self.ext = os.path.splitext(path)[1].strip('.')
+        self.name = os.path.basename(path)
+        self.dir = os.path.dirname(path)
+        self.path = path
+        self.score = 0
+        self.head = 0
+        self.tail = 0
+        self.matched = False
+
 
     def __str__(self):
         return self.path

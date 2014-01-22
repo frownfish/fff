@@ -22,10 +22,9 @@ class FuzzyIndex:
                 if d in dirs:
                     dirs.remove(d)
             for f in fs:
-                if focus_files:
-                    if f.lower() in focus_files:
-                        path = os.path.join(r, f)
-                        self.append(path)
+                if f.lower() in focus_files:
+                    path = os.path.join(r, f)
+                    self.append(path)
                 else:
                     if True not in (bool(re.search(p, f)) for p in ignore_files):
                         path = os.path.join(r, f)
