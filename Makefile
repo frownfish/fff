@@ -8,7 +8,7 @@ clean-all:
 	make clean
 	find . -name "*.pyc" -delete
 
-test: test/test_all.py test-fuzzy-file
+test: test/test_all.py test-fuzzyfile
 	python test/test_all.py
 
 test-fuzzyfile: test/test_fuzzyfile.py
