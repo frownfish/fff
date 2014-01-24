@@ -1,15 +1,19 @@
-install: src/fff/
-	python setup.py -q install
+ROOT := .
+
+install: src/*
+	python setup.py install
 
 clean:
-	python setup.py -q clean
+	python setup.py clean
 
-clean-all:
-	make clean
+clean-all: clean
 	find . -name "*.pyc" -delete
 
-test: test/test_all.py test-fuzzyfile
-	python test/test_all.py
+test: $(ROOT)/test/test_all.py pep8
+	python $(ROOT)/test/test_all.py
 
-test-fuzzyfile: test/test_fuzzyfile.py
-	python test/test_fuzzyfile.py
+test-fuzzyfile: $(ROOT)/test/test_fuzzyfile.py
+	python $(ROOT)/test/test_fuzzyfile.py
+
+pep8: *.py
+	pep8 . --ignore=E501 --exclude=build

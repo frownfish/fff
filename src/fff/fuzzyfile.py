@@ -17,7 +17,6 @@ class FuzzyFile:
         self.tail = 0
         self.matched = False
 
-
     def __str__(self):
         return self.path
 
@@ -43,11 +42,9 @@ class FuzzyFile:
         else:
             return NotImplemented
 
-
     def __nonzero__(self):
         """ evaluate the class instance as a bool, based on self.matched """
         return self.matched
-
 
     def match(self, patterns, include_path=False):
         """ try to match the pattern. 'patterns' is a list of compiled regular expressions. """
@@ -67,9 +64,8 @@ class FuzzyFile:
                 break
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     f = FuzzyFile("/home/jeff/git/fff/fff/fuzzyfile/fuzzyfile.py")
     print f.name
     print f.ext
     print f.path
-
