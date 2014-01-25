@@ -1,20 +1,54 @@
 ROOT := .
-SRC_DIR := $(ROOT)/fff
-TEST_DIR := $(ROOT)/test
+PACKAGE := $(ROOT)/fff
+TESTS := $(ROOT)/test
+PYTHON := python
+PIP := pip
+SUDO := sudo
+PEP8 := pep8
+PEP_IGNORE := E501
 
-install: $(SRC)/*
-	python setup.py install
+# Install ####################################################################
 
+.PHONY: all
+all: 
+	$(MAKE) install
+	$(MAKE) clean-all
+	$(MAKE) test
+
+.PHONY: install
+install: $(PACKAGE)
+	$(MAKE) .depends
+	$(SUDO) $(PYTHON) setup.py install
+
+.PHONY: .depends
+.depends:
+	$(PIP) install pep8
+
+# Clean-up ###################################################################
+
+.PHONY: .clean-dist
+.clean-dist:
+	$(SUDO) rm -rf dist build *.egg-info 
+
+.PHONY: clean
 clean:
-	python setup.py clean
+	$(PYTHON) setup.py clean
+	find $(PACKAGE) -name "*.pyc" -delete
 
-clean-all: clean
-	find . -name "*.pyc" -delete
+.PHONY: clean-all
+clean-all: clean .clean-dist
 
-test: test-fuzzyfile pep8
+# Test #######################################################################
 
-test-fuzzyfile: $(TEST_DIR)/test_fuzzyfile.py
-	python $(ROOT)/test/test_fuzzyfile.py
+test: $(PACKAGE) $(TESTS)
+	$(MAKE) test-fuzzyfile
+	$(MAKE) pep8
 
-pep8: *.py
-	pep8 . --ignore=E501 --exclude=build
+test-fuzzyfile: $(TESTS)/test_fuzzyfile.py
+	$(PYTHON) $(ROOT)/test/test_fuzzyfile.py
+
+# Static Analysis ############################################################
+
+.PHONY: pep8
+pep8: $(PACKAGE)
+	pep8 $(PACKAGE) --ignore=$(PEP_IGNORE)
