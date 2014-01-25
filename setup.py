@@ -9,7 +9,7 @@ from fff import __project__, CLI
 README = 'README.md'
 
 
-setuptools.setup(name=__project__,
+setuptools.setup(name='fff',
                  version='0.0.1',
 
                  description='Fuzzy File Finder.',
