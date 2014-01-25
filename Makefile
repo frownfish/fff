@@ -3,7 +3,6 @@ PACKAGE := $(ROOT)/fff
 TESTS := $(ROOT)/test
 PYTHON := python
 PIP := pip
-SUDO := sudo
 PEP8 := pep8
 PEP_IGNORE := E501
 
@@ -16,9 +15,8 @@ all:
 	$(MAKE) test
 
 .PHONY: install
-install: $(PACKAGE)
-	$(MAKE) .depends
-	$(SUDO) $(PYTHON) setup.py install
+install: $(PACKAGE) .depends
+	$(PYTHON) setup.py install
 
 .PHONY: .depends
 .depends:
@@ -28,7 +26,7 @@ install: $(PACKAGE)
 
 .PHONY: .clean-dist
 .clean-dist:
-	$(SUDO) rm -rf dist build *.egg-info 
+	rm -rf dist build *.egg-info 
 
 .PHONY: clean
 clean:
@@ -40,9 +38,7 @@ clean-all: clean .clean-dist
 
 # Test #######################################################################
 
-test: $(PACKAGE) $(TESTS)
-	$(MAKE) test-fuzzyfile
-	$(MAKE) pep8
+test: $(PACKAGE) test-fuzzyfile pep8
 
 test-fuzzyfile: $(TESTS)/test_fuzzyfile.py
 	$(PYTHON) $(ROOT)/test/test_fuzzyfile.py
