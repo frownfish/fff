@@ -1,10 +1,13 @@
+PROJECT := FuzzyFileFinder
 ROOT := .
-PACKAGE := $(ROOT)/fff
+PACKAGE := fff
 TESTS := $(ROOT)/test
 PYTHON := python
 PIP := pip
 PEP8 := pep8
 PEP_IGNORE := E501
+DEPENDS := pep8 nose coverage
+NOSE := nosetests
 
 # Install ####################################################################
 
@@ -20,28 +23,28 @@ install: $(PACKAGE) .depends
 
 .PHONY: .depends
 .depends:
-	$(PIP) install pep8
+	$(PIP) install $(DEPENDS) --use-mirrors
 
 # Clean-up ###################################################################
 
 .PHONY: .clean-dist
 .clean-dist:
-	rm -rf dist build *.egg-info 
+	rm -rf dist build *.egg-info
 
 .PHONY: clean
 clean:
 	$(PYTHON) setup.py clean
-	find $(PACKAGE) -name "*.pyc" -delete
+	find $(ROOT) -name "*.pyc" -delete
 
 .PHONY: clean-all
 clean-all: clean .clean-dist
 
 # Test #######################################################################
 
-test: $(PACKAGE) test-fuzzyfile pep8
+.PHONY: test
+test: $(PACKAGE) pep8
+	$(NOSE) --verbose --stop --cover-package=$(PACKAGE) --with-coverage
 
-test-fuzzyfile: $(TESTS)/test_fuzzyfile.py
-	$(PYTHON) $(ROOT)/test/test_fuzzyfile.py
 
 # Static Analysis ############################################################
 
