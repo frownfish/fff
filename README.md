@@ -1,4 +1,5 @@
 #Fuzzy File Finder
+[![Build Status](https://travis-ci.org/frownfish/fff.png?branch=master)](https://travis-ci.org/frownfish/fff)
 
 ##Installation
 
