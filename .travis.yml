@@ -8,6 +8,6 @@ install:
 
 script:
   - "make test"
-  - "coverage run --source fff setup.py test"
+
 after_success:
     coveralls
