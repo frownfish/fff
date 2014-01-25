@@ -55,7 +55,7 @@ class FuzzyIndex:
             return None
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     logging.basicConfig(level=logging.INFO, format='%(message)s')
     FI = FuzzyIndex(os.getcwd())
     for f in FI.files:

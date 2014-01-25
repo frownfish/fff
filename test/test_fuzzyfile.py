@@ -43,6 +43,23 @@ class TestFuzzyFile(unittest.TestCase):
         other = FuzzyFile('home/jeff/otherfile.txt')
         self.assertFalse(self.f < other)
         self.assertFalse(other < self.f)
+        self.f.matched = True
+        self.assertLess(self.f, other)
+        other.matched = True
+        self.f.score = 0
+        other.score = 2
+        self.assertLess(self.f, other)
+        other.score = 0
+        self.f.head = 0
+        other.head = 2
+        self.assertLess(self.f, other)
+        other.head = 0
+        self.f.tail = 0
+        other.tail = 2
+        self.assertLess(self.f, other)
+        other.tail = 0
+        self.assertLess(self.f, other)
+        self.assertEqual(self.f < 0, NotImplemented)
 
     def test_match_filename_level_0(self):
         pattern = 'bog'

@@ -39,5 +39,5 @@ def _output(f, args):
         else:
             return f.path
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

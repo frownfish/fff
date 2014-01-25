@@ -64,7 +64,7 @@ class FuzzyFile:
                 break
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     f = FuzzyFile("/home/jeff/git/fff/fff/fuzzyfile/fuzzyfile.py")
     print f.name
     print f.ext
