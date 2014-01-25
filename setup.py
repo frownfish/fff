@@ -1,11 +1,28 @@
-from distutils.core import setup
+'''
+Setup script for FuzzyFileFinder.
+'''
 
-setup(name='fff',
-      version='0.1',
-      description='Fuzzy File Finder',
-      author="Jeff Kloosterman",
-      url="https://github.com/frownfish/fff",
-      packages=['fff'],
-      package_dir={'fff': 'src/fff'},
-      scripts=['src/fffind.py']
-      )
+import setuptools
+
+from fff import __project__, CLI
+
+README = 'README.md'
+
+
+setuptools.setup(name=__project__,
+                 version='0.0.1',
+
+                 description='Fuzzy File Finder.',
+                 url="https://github.com/frownfish/fff",
+
+                 author='Jeff Kloosterman',
+                 author_email='kloosterman.jeff@gmail.com',
+
+                 packages=setuptools.find_packages(),
+
+                 entry_points={'console_scripts': [CLI + ' = fff.fffind:main']},
+                 license='MIT',
+
+                 long_description=open(README).read(),
+                 install_requires=[]
+                 )
