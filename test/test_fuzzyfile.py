@@ -41,8 +41,8 @@ class TestFuzzyFile(unittest.TestCase):
 
     def test_lt(self):
         other = FuzzyFile('home/jeff/otherfile.txt')
-        self.assertLess(self.f, other)
-        self.assertLess(other, self.f)
+        self.assertFalse(self.f < other)
+        self.assertFalse(other < self.f)
         self.f.matched = True
         self.assertLess(self.f, other)
         other.matched = True
