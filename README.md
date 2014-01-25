@@ -1,6 +1,6 @@
 #Fuzzy File Finder
 [![Build Status](https://travis-ci.org/frownfish/fff.png?branch=master)](https://travis-ci.org/frownfish/fff)
-
+[![Coverage Status](https://coveralls.io/repos/frownfish/fff/badge.png?branch=master)](https://coveralls.io/r/frownfish/fff?branch=master)
 ##Installation
 
 Clone this repo into a location on your file system.
