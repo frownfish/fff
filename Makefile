@@ -43,7 +43,7 @@ clean-all: clean .clean-dist
 
 .PHONY: test
 test: $(PACKAGE) pep8
-	$(NOSE) --verbose --stop --cover-package=$(PACKAGE) --with-coverage
+	$(NOSE)
 
 
 # Static Analysis ############################################################
