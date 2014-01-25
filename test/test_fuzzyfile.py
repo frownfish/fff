@@ -2,7 +2,8 @@ import re
 import unittest
 
 from fff.fuzzyfile import FuzzyFile
-from fff.fuzzyindex import MATCH_LEVELS, CAPTURE, HEAD, TAIL
+from fff import MATCH_LEVELS, CAPTURE, HEAD, TAIL
+
 
 FAKE_FILE = '/home/jeff/bogusfile.txt'
 

@@ -4,11 +4,7 @@ import re
 import logging
 
 import fuzzyfile
-
-MATCH_LEVELS = 20
-CAPTURE = "(.{{,{0}}}?)"
-HEAD = "^(?P<head>.*?)"
-TAIL = "(?P<tail>.*?)$"
+from fff import MATCH_LEVELS, CAPTURE, HEAD, TAIL
 
 
 class FuzzyIndex:
