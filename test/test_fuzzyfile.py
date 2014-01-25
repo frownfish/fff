@@ -59,7 +59,7 @@ class TestFuzzyFile(unittest.TestCase):
         self.assertLess(self.f, other)
         other.tail = 0
         self.assertLess(self.f, other)
-        self.assertEqual(self.f < 0, NotImplemented)
+        self.assertRaises(NotImplementedError, self.f.__lt__, 0)
 
     def test_match_filename_level_0(self):
         pattern = 'bog'

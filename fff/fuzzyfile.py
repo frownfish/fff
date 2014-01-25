@@ -40,7 +40,7 @@ class FuzzyFile:
                 # alphabetically
                 return self.name < other.name
         else:
-            return NotImplemented
+            raise NotImplementedError('Operator not defined for type {}'.format(type(other)))
 
     def __nonzero__(self):
         """ evaluate the class instance as a bool, based on self.matched """
