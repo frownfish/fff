@@ -1,17 +1,17 @@
+import os
 import re
 import unittest
 
 from fff.fuzzyfile import FuzzyFile
 from fff import MATCH_LEVELS, CAPTURE, HEAD, TAIL
 
-
-FAKE_FILE = '/home/jeff/bogusfile.txt'
+from test import BOGUS_FILE, FAKE_FILE
 
 
 class TestFuzzyFile(unittest.TestCase):
 
     def setUp(self):
-        self.f = FuzzyFile(FAKE_FILE)
+        self.f = FuzzyFile(BOGUS_FILE)
 
     def gen_patterns(self, pattern):
         patterns = []
@@ -21,18 +21,18 @@ class TestFuzzyFile(unittest.TestCase):
         return patterns
 
     def test_initialization(self):
-        f = FuzzyFile(FAKE_FILE)
-        self.assertEqual(self.f.ext, 'txt')
-        self.assertEqual(self.f.name, 'bogusfile.txt')
-        self.assertEqual(self.f.dir, '/home/jeff')
-        self.assertEqual(self.f.path, FAKE_FILE)
+        f = FuzzyFile(BOGUS_FILE)
+        self.assertEqual(self.f.ext, os.path.splitext(BOGUS_FILE)[1].strip('.'))
+        self.assertEqual(self.f.name, os.path.basename(BOGUS_FILE))
+        self.assertEqual(self.f.dir, os.path.dirname(BOGUS_FILE))
+        self.assertEqual(self.f.path, BOGUS_FILE)
         self.assertEqual(self.f.score, 0)
         self.assertEqual(self.f.head, 0)
         self.assertEqual(self.f.tail, 0)
         self.assertFalse(self.f.matched)
 
     def test_str(self):
-        self.assertEqual(str(self.f), FAKE_FILE)
+        self.assertEqual(str(self.f), BOGUS_FILE)
 
     def test_bool(self):
         self.assertFalse(self.f)
@@ -40,7 +40,7 @@ class TestFuzzyFile(unittest.TestCase):
         self.assertTrue(self.f)
 
     def test_lt(self):
-        other = FuzzyFile('home/jeff/otherfile.txt')
+        other = FuzzyFile(FAKE_FILE)
         self.assertFalse(self.f < other)
         self.assertFalse(other < self.f)
         self.f.matched = True

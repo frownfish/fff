@@ -52,7 +52,10 @@ class FuzzyIndex:
         elif not include_path:
             return self.match(pattern, include_path=True, list_files=list_files)
         else:
-            return None
+            if list_files:
+                return []
+            else:
+                return None
 
 
 if __name__ == "__main__":  # pragma: no cover

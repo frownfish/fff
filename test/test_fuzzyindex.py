@@ -1,75 +1,52 @@
 import os
-import shutil
 import unittest
 
 from fff.fuzzyindex import FuzzyIndex
+from fff.fuzzyfile import FuzzyFile
 from fff import MATCH_LEVELS, IGNORE_DIRS, IGNORE_FILES
 
-ROOT = 'tmp'
+from test import setup_file_system, cleanup_file_system
+from test import FILE_SYSTEM, FOCUS_FILES, TEST_ROOT, FAKE_FILE, PATH_SEP, NO_MATCH
 
-FOCUS_FILES = ['dir0_file1.ext']
-
-IGNORE = [
-'tmp/dir2/py.pyc',
-'tmp/dir2/__init__.py',
-'tmp/.git/nomatch.ext'
-]
-
-FILES = [
-'tmp/dir0_file1.ext',
-'tmp/dir1/dir1_file1.ext',
-'tmp/dir1/dir1_file2.ext',
-'tmp/dir2/dir2_file1.ext',
-'tmp/dir2/dir2_file2.ext',
-]
-
-FILE_SYSTEM = FILES + IGNORE
 
 class TestFuzzyIndex(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         """ setup the test directory. """
-        def makefile(path):
-            basedir = os.path.dirname(path)
-            if not os.path.exists(basedir):
-                os.makedirs(basedir)
-            open(path, 'a').close()
-
-        for f in FILE_SYSTEM:
-            makefile(f)
+        setup_file_system(FILE_SYSTEM)
 
     @classmethod
     def tearDownClass(cls):
-        shutil.rmtree(ROOT)
+        cleanup_file_system(TEST_ROOT)
+        
 
     def setUp(self):
-        self.fi = FuzzyIndex(ROOT, ignore_dirs=IGNORE_DIRS, ignore_files=IGNORE_FILES)
+        self.fi = FuzzyIndex(TEST_ROOT, ignore_dirs=IGNORE_DIRS, ignore_files=IGNORE_FILES)
 
     def test_init(self):
         self.assertEqual(len(self.fi.files), 5)
 
     def test_append(self):
-        FILE = '/path/to/file.ext'
-        self.fi.append(FILE)
-        self.assertEqual(self.fi.files[-1].path, FILE)
+        self.fi.append(FAKE_FILE)
+        self.assertEqual(self.fi.files[-1].path, FAKE_FILE)
 
     def test_generate_paths(self):
-        paths = list(self.fi.generate_paths(ROOT))
+        paths = list(self.fi.generate_paths(TEST_ROOT))
         paths.sort()
         FILE_SYSTEM.sort()
         self.assertEqual(paths, FILE_SYSTEM)
 
     def test_generate_paths_filter_dirs(self):
-        p = list(self.fi.generate_paths(ROOT, ignore_dirs=['dir1', 'dir2']))
+        p = list(self.fi.generate_paths(TEST_ROOT, ignore_dirs=['dir1', 'dir2']))
         self.assertEqual(p, ['tmp/dir0_file1.ext', 'tmp/.git/nomatch.ext'])
 
     def test_generate_paths_filter_files(self):
-        p = list(self.fi.generate_paths(ROOT, ignore_files=[r'\.pyc$', r'\.py$', r'\.ext$']))
+        p = list(self.fi.generate_paths(TEST_ROOT, ignore_files=[r'\.pyc$', r'\.py$', r'\.ext$']))
         self.assertEqual(p, [])
 
     def test_generate_paths_focus(self):
-        paths = [os.path.basename(x) for x in self.fi.generate_paths(ROOT, focus_files=FOCUS_FILES)]
+        paths = list(self.fi.generate_paths(TEST_ROOT, focus_files=[FOCUS_FILES[0].lstrip(TEST_ROOT).lstrip(PATH_SEP)]))
         paths.sort()
         FOCUS_FILES.sort()
         self.assertEqual(len(paths), 1)
@@ -82,8 +59,8 @@ class TestFuzzyIndex(unittest.TestCase):
         self.assertEqual(patts, patterns)        
 
     def test_match_none(self):
-        NO_MATCH = ' '
-        self.assertEqual(self.fi.match(NO_MATCH), None)
+        m = self.fi.match(NO_MATCH)
+        self.assertEqual(m, None)
 
     def test_match(self):
         m = self.fi.match('d1_f1')
@@ -95,10 +72,14 @@ class TestFuzzyIndex(unittest.TestCase):
 
     def test_match_list(self):
         m = self.fi.match('dir1_', list_files=True)
-        self.assertTrue(type(m) == list)
+        self.assertEqual(type(m), list)
         self.assertEqual(len(m), 2)
         L1 = [x.path for x in m]
         L1.sort()
         L2 = ['tmp/dir1/dir1_file1.ext',
               'tmp/dir1/dir1_file2.ext']
         self.assertEqual(L1, L2)
+
+    def test_match_none_list(self):
+        m = self.fi.match(NO_MATCH, list_files=True)
+        self.assertEqual(m, [])
