@@ -55,10 +55,18 @@ class TestFuzzyIndex(unittest.TestCase):
         self.assertEqual(self.fi.files[-1].path, FILE)
 
     def test_generate_paths(self):
-        paths = [x for x in self.fi.generate_paths(ROOT, ignore_dirs=IGNORE_DIRS, ignore_files=IGNORE_FILES)]
+        paths = list(self.fi.generate_paths(ROOT))
         paths.sort()
-        FILES.sort()
-        self.assertEqual(paths, FILES)
+        FILE_SYSTEM.sort()
+        self.assertEqual(paths, FILE_SYSTEM)
+
+    def test_generate_paths_filter_dirs(self):
+        p = list(self.fi.generate_paths(ROOT, ignore_dirs=['dir1', 'dir2']))
+        self.assertEqual(p, ['tmp/dir0_file1.ext', 'tmp/.git/nomatch.ext'])
+
+    def test_generate_paths_filter_files(self):
+        p = list(self.fi.generate_paths(ROOT, ignore_files=[r'\.pyc$', r'\.py$', r'\.ext$']))
+        self.assertEqual(p, [])
 
     def test_generate_paths_focus(self):
         paths = [os.path.basename(x) for x in self.fi.generate_paths(ROOT, focus_files=FOCUS_FILES)]
@@ -73,6 +81,24 @@ class TestFuzzyIndex(unittest.TestCase):
         patterns = ['^(?P<head>.*?)a(.{{,{0}}}?)b(?P<tail>.*?)$'.format(i) for i in range(MATCH_LEVELS)]
         self.assertEqual(patts, patterns)        
 
-    def test_match(self):
+    def test_match_none(self):
         NO_MATCH = ' '
         self.assertEqual(self.fi.match(NO_MATCH), None)
+
+    def test_match(self):
+        m = self.fi.match('d1_f1')
+        self.assertEqual(m.path, 'tmp/dir1/dir1_file1.ext')
+
+    def test_match_include_dir(self):
+        m = self.fi.match('/file1')
+        self.assertEqual(m.path, 'tmp/dir0_file1.ext')
+
+    def test_match_list(self):
+        m = self.fi.match('dir1_', list_files=True)
+        self.assertTrue(type(m) == list)
+        self.assertEqual(len(m), 2)
+        L1 = [x.path for x in m]
+        L1.sort()
+        L2 = ['tmp/dir1/dir1_file1.ext',
+              'tmp/dir1/dir1_file2.ext']
+        self.assertEqual(L1, L2)
