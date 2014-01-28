@@ -2,6 +2,8 @@ import os
 import sys
 import re
 import logging
+import multiprocessing
+logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 
 import fuzzyfile
 from fff import MATCH_LEVELS, CAPTURE, HEAD, TAIL
@@ -9,22 +11,46 @@ from fff import MATCH_LEVELS, CAPTURE, HEAD, TAIL
 
 class FuzzyIndex:
     """ class to hold isntances of the File class and some indexing functions. """
-    def __init__(self, root, ignore_dirs=[], ignore_files=[], focus_files=[]):
+    def __init__(self, root, exclude_dirs=[], exclude_files=[], focus_files=[]):
         """ create a file index built out of instances of the File class. """
-        logging.debug(ignore_files)
         self.files = []
-        for p in self.generate_paths(root, ignore_dirs, ignore_files, focus_files):
-            self.append(p)
+        for r, dirs, files in os.walk(root):
+            # do all the filtering
+            dirs[:] = self.filter_dirs(dirs, exclude_dirs)
+            files = self.filter_files(files, exclude_files, focus_files)
 
-    def generate_paths(self, root, ignore_dirs=[], ignore_files=[], focus_files=[]):
-        """ walk through the file system and yield paths based on the given filters"""
-        for r, dirs, fs in os.walk(root):
-            dirs[:] = filter(lambda x: x not in ignore_dirs, dirs)
-            fs = filter(lambda x: True not in (bool(re.search(p, x)) for p in ignore_files), fs)
-            if focus_files:
-                fs = filter(lambda x: x in focus_files, fs)
-            for f in fs:
-                yield os.path.join(r, f)
+            # append files to this object
+            for f in files:
+                self.append(os.path.join(r, f))
+
+            # spawn a subprocess for each dir, if there are more than 2
+            if len(dirs) > 1:
+                logging.debug('creating subprocess pool')
+                pool = multiprocessing.Pool(len(dirs))
+                subdirs = [os.path.join(r, d) for d in dirs]
+                kwargs = {'exclude_dirs': exclude_dirs, 'exclude_files': exclude_files, 'focus_files': focus_files}
+                results = []
+                for s in subdirs:
+                    results = pool.apply_async(FuzzyIndex, args=(s,), kwds=kwargs, callback=self.extend)
+                dirs[:] = []
+                pool.close()
+                pool.join()
+
+    def filter_dirs(self, dirs, ex_dirs):
+        return filter(lambda x: x not in ex_dirs, dirs)
+
+    def filter_files(self, files, ex_files, foc_files):
+        files = filter(lambda x: True not in (bool(re.search(p, x)) for p in ex_files), files)
+        if foc_files:
+            files = filter(lambda x: x in foc_files, files)
+        return files
+
+    def extend(self, other):
+        if isinstance(other, type(self)):
+            logging.debug('extend called')
+            self.files.extend(other.files)
+        else:
+            raise NotImplementedError('extend not defined for type : {}'.format(type(other)))
 
     def append(self, f):
         _f = fuzzyfile.FuzzyFile(f)

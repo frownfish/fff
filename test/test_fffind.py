@@ -1,7 +1,7 @@
 import argparse
 import unittest
 
-from fff import fffind, IGNORE_DIRS, IGNORE_FILES, ROOT
+from fff import fffind, EXCLUDE_DIRS, EXCLUDE_FILES, ROOT
 from fff.fuzzyfile import FuzzyFile
 
 from test import FAKE_FILE
@@ -49,8 +49,8 @@ class TestFffind(unittest.TestCase):
         self.assertEqual(args.pattern, 'this')
         self.assertEqual(args.root, ROOT)
         self.assertEqual(args.focus_files, [])
-        self.assertEqual(args.exclude_files, IGNORE_FILES)
-        self.assertEqual(args.exclude_dirs, IGNORE_DIRS)
+        self.assertEqual(args.exclude_files, EXCLUDE_FILES)
+        self.assertEqual(args.exclude_dirs, EXCLUDE_DIRS)
         self.assertFalse(args.list)
         self.assertFalse(args.p)
 
