@@ -20,7 +20,6 @@ class TestFuzzyIndex(unittest.TestCase):
     def tearDownClass(cls):
         cleanup_file_system(TEST_ROOT)
         
-
     def setUp(self):
         self.fi = FuzzyIndex(TEST_ROOT, exclude_dirs=EXCLUDE_DIRS, exclude_files=EXCLUDE_FILES)
 
@@ -38,30 +37,22 @@ class TestFuzzyIndex(unittest.TestCase):
         self.assertFalse(FAKE_FILE in [x.path for x in self.fi.files])
         self.fi.extend(other)
         self.assertTrue(FAKE_FILE in [x.path for x in self.fi.files])
+        self.assertRaises(NotImplementedError, self.fi.extend, 0)
 
-    @unittest.skip("generate_paths test")
-    def test_generate_paths(self):
-        paths = list(self.fi.generate_paths(TEST_ROOT))
-        paths.sort()
-        FILE_SYSTEM.sort()
-        self.assertEqual(paths, FILE_SYSTEM)
+    def test_exclude_dirs(self):
+        p = list(self.fi.filter_dirs(['dir1', 'dir2', 'tmp', '.git'], exclude_dirs=['dir1', 'dir2']))
+        p.sort()
+        self.assertEqual(p, ['.git', 'tmp'])
 
-    @unittest.skip("generate_paths test")
-    def test_generate_paths_filter_dirs(self):
-        p = list(self.fi.generate_paths(TEST_ROOT, exclude_dirs=['dir1', 'dir2']))
-        self.assertEqual(p, ['tmp/dir0_file1.ext', 'tmp/.git/nomatch.ext'])
-
-    @unittest.skip("generate_paths test")
-    def test_generate_paths_filter_files(self):
-        p = list(self.fi.generate_paths(TEST_ROOT, exclude_files=[r'\.pyc$', r'\.py$', r'\.ext$']))
+    def test_filter_files_exclude_files(self):
+        p = list(self.fi.filter_files(IGNORE, exclude_files=[r'\.pyc$', r'\.py$', r'\.ext$']))
         self.assertEqual(p, [])
 
-    @unittest.skip("generate_paths test")
-    def test_generate_paths_focus(self):
-        paths = list(self.fi.generate_paths(TEST_ROOT, focus_files=[FOCUS_FILES[0].lstrip(TEST_ROOT).lstrip(PATH_SEP)]))
+    def test_filter_files_focus_files(self):
+        paths = list(self.fi.filter_files(FILE_SYSTEM, focus_files=FOCUS_FILES))
         paths.sort()
         FOCUS_FILES.sort()
-        self.assertEqual(len(paths), 1)
+        self.assertEqual(len(paths), len(FOCUS_FILES))
         self.assertEqual(paths, FOCUS_FILES)
 
     def test_generate_patterns(self):

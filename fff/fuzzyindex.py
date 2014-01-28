@@ -6,7 +6,9 @@ import multiprocessing
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 
 import fuzzyfile
-from fff import MATCH_LEVELS, CAPTURE, HEAD, TAIL
+from fff import MATCH_LEVELS, CAPTURE, HEAD, TAIL, MAX_WORKERS
+
+nworkers = multiprocessing.Value('i', 0)
 
 
 class FuzzyIndex:
@@ -27,22 +29,26 @@ class FuzzyIndex:
             if len(dirs) > 1:
                 logging.debug('creating subprocess pool')
                 pool = multiprocessing.Pool(len(dirs))
-                subdirs = [os.path.join(r, d) for d in dirs]
+                # subdirs = [os.path.join(r, d) for d in dirs]
                 kwargs = {'exclude_dirs': exclude_dirs, 'exclude_files': exclude_files, 'focus_files': focus_files}
-                results = []
-                for s in subdirs:
-                    results = pool.apply_async(FuzzyIndex, args=(s,), kwds=kwargs, callback=self.extend)
-                dirs[:] = []
+                while dirs:
+                    with nworkers.get_lock():
+                        if nworkers.value < MAX_WORKERS:
+                            nworkers.value += 1
+                        else:
+                            break
+                    s = os.path.join(r, dirs.pop())
+                    pool.apply_async(FuzzyIndex, args=(s,), kwds=kwargs, callback=self.extend)
                 pool.close()
                 pool.join()
 
-    def filter_dirs(self, dirs, ex_dirs):
-        return filter(lambda x: x not in ex_dirs, dirs)
+    def filter_dirs(self, dirs, exclude_dirs=[]):
+        return filter(lambda x: x not in exclude_dirs, dirs)
 
-    def filter_files(self, files, ex_files, foc_files):
-        files = filter(lambda x: True not in (bool(re.search(p, x)) for p in ex_files), files)
-        if foc_files:
-            files = filter(lambda x: x in foc_files, files)
+    def filter_files(self, files, exclude_files=[], focus_files=[]):
+        files = filter(lambda x: True not in (bool(re.search(p, x)) for p in exclude_files), files)
+        if focus_files:
+            files = filter(lambda x: x in focus_files, files)
         return files
 
     def extend(self, other):
