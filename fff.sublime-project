@@ -9,6 +9,13 @@
                 "*.sublime-workspace",
                 "*.sublime-project",
                 ".gitignore"
+                
+            ],
+            "folder_exclude_patterns":
+            [
+                "build",
+                "*.egg-info",
+                "dist"
             ]
         }
     ],
