@@ -46,6 +46,12 @@ class FuzzyFile:
         """ evaluate the class instance as a bool, based on self.matched """
         return self.matched
 
+    def reset(self):
+        self.score = 0
+        self.head = 0
+        self.tail = 0
+        self.matched = False
+
     def match(self, patterns, include_path=False):
         """ try to match the pattern. 'patterns' is a list of compiled regular expressions. """
         for p in patterns:

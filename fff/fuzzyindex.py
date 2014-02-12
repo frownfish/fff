@@ -30,6 +30,10 @@ class FuzzyIndex:
         _f = fuzzyfile.FuzzyFile(f)
         self.files.append(_f)
 
+    def reset(self):
+        for x in self.files:
+            x.reset()
+
     def generate_patterns(self, pattern):
         patterns = []
         for level in range(MATCH_LEVELS):
