@@ -66,7 +66,7 @@ class TestFuzzyFile(unittest.TestCase):
         patterns = self.gen_patterns(pattern)
 
         self.assertFalse(self.f.matched)
-        self.f.match(patterns)
+        self.f.match(pattern, patterns)
         self.assertTrue(self.f.matched)
         self.assertEqual(self.f.score, 0)
         self.assertEqual(self.f.head, 0)
@@ -77,7 +77,7 @@ class TestFuzzyFile(unittest.TestCase):
         patterns = self.gen_patterns(pattern)
 
         self.assertFalse(self.f.matched)
-        self.f.match(patterns)
+        self.f.match(pattern, patterns)
         self.assertTrue(self.f.matched)
         self.assertEqual(self.f.score, 2)
         self.assertEqual(self.f.head, 0)
@@ -88,7 +88,7 @@ class TestFuzzyFile(unittest.TestCase):
         patterns = self.gen_patterns(pattern)
 
         self.assertFalse(self.f.matched)
-        self.f.match(patterns)
+        self.f.match(pattern, patterns)
         self.assertTrue(self.f.matched)
         self.assertEqual(self.f.score, 4)
         self.assertEqual(self.f.head, 1)
@@ -99,11 +99,23 @@ class TestFuzzyFile(unittest.TestCase):
         patterns = self.gen_patterns(pattern)
 
         self.assertFalse(self.f.matched)
-        self.f.match(patterns, include_path=True)
+        self.f.match(pattern, patterns, include_path=True)
         self.assertTrue(self.f.matched)
         self.assertEqual(self.f.score, 7)
         self.assertEqual(self.f.head, 6)
         self.assertEqual(self.f.tail, 0)
+
+    def test_reset(self):
+        self.assertFalse(self.f.matched)
+        self.f.matched = True
+        self.f.score = 10
+        self.f.head = 11
+        self.f.tail = 12
+        self.f.reset()
+        self.assertFalse(self.f.matched)
+        self.assertEqual(0, self.f.score)
+        self.assertEqual(0, self.f.head)
+        self.assertEqual(0, self.f.tail)
 
 
 if __name__ == '__main__':

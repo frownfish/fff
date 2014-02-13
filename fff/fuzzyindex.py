@@ -45,7 +45,7 @@ class FuzzyIndex:
         """ find the best match in the file index for the given pattern. """
         patterns = self.generate_patterns(pattern)
         for f in self.files:
-            f.match(patterns, include_path=include_path)  # the fuzzyfile object will update with its scores.
+            f.match(pattern, patterns, include_path=include_path)  # the fuzzyfile object will update with its scores.
 
         # return the "best" match, that is the one with the lowest score (fewest interposed characters)
         if True in map(lambda x: bool(x), self.files):

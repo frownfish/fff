@@ -4,13 +4,13 @@ Setup script for FuzzyFileFinder.
 
 import setuptools
 
-from fff import __project__, CLI
+from fff import __project__, __version__, CLI
 
 README = 'README.md'
 
 
 setuptools.setup(name='fff',
-                 version='0.0.1',
+                 version=__version__,
 
                  description='Fuzzy File Finder.',
                  url="https://github.com/frownfish/fff",

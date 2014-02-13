@@ -52,7 +52,7 @@ class FuzzyFile:
         self.tail = 0
         self.matched = False
 
-    def match(self, patterns, include_path=False):
+    def match(self, rawpattern, patterns, include_path=False):
         """ try to match the pattern. 'patterns' is a list of compiled regular expressions. """
         for p in patterns:
             if include_path:
@@ -61,9 +61,9 @@ class FuzzyFile:
                 m = p.search(self.name)
             if m:
                 logging.debug(p)
-                self.head = len(m.groupdict(0)['head'])
-                self.tail = len(m.groupdict(0)['tail'])
-                self.score = sum([len(x) for x in m.groups()]) - self.head - self.tail
+                self.head = len(m.groupdict()['head'])
+                self.tail = len(m.groupdict()['tail'])
+                self.score = len(m.groupdict()['body']) - len(rawpattern)
                 self.matched = True
                 logging.debug("p: {0}, g: {1}".format(self.path, m.groups()))
                 logging.debug("s: {0}, h: {1}, t: {2}".format(self.score, self.head, self.tail))

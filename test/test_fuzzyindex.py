@@ -55,8 +55,12 @@ class TestFuzzyIndex(unittest.TestCase):
     def test_generate_patterns(self):
         patts = [x.pattern for x in self.fi.generate_patterns('ab')]
         self.assertEqual(len(patts), MATCH_LEVELS)
-        patterns = ['^(?P<head>.*?)a(.{{,{0}}}?)b(?P<tail>.*?)$'.format(i) for i in range(MATCH_LEVELS)]
-        self.assertEqual(patts, patterns)        
+        patterns = ['^(?P<head>.*?)(?P<body>a.{{,{0}}}?b)(?P<tail>.*?)$'.format(i) for i in range(MATCH_LEVELS)]
+        self.assertEqual(patts, patterns)
+
+    def test_generate_patterns_too_long(self):
+        patts = [x.pattern for x in self.fi.generate_patterns('omg_this_is_a_long_pattern' + '!' * 100)]
+        self.assertEqual(len(patts), MATCH_LEVELS)
 
     def test_match_none(self):
         m = self.fi.match(NO_MATCH)
@@ -83,3 +87,11 @@ class TestFuzzyIndex(unittest.TestCase):
     def test_match_none_list(self):
         m = self.fi.match(NO_MATCH, list_files=True)
         self.assertEqual(m, [])
+
+    def test_reset(self):
+        self.assertFalse(True in [bool(x) for x in self.fi.files])
+        self.fi.match('d1_f1')
+        self.assertTrue(True in [bool(x) for x in self.fi.files])
+        self.fi.reset()
+        self.assertFalse(True in [bool(x) for x in self.fi.files])
+
