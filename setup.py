@@ -13,7 +13,7 @@ setuptools.setup(name='fff',
                  version=__version__,
 
                  description='Fuzzy File Finder.',
-                 url="https://github.com/frownfish/fff",
+                 url="https://github.com/jkloo/fff",
 
                  author='Jeff Kloosterman',
                  author_email='kloosterman.jeff@gmail.com',
